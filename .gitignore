@@ -1,4 +1,18 @@
-# Arquivo .gitignore
-.aes
-.agent
-.claude
+# Ferramentas de IA / agentes
+*.aes/
+*.agents/
+*.claude/
+
+# Dependências e build
+node_modules/
+dist/
+build/
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Logs e arquivos de sistema
+*.log
+.DS_Store
