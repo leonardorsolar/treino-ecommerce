@@ -12,7 +12,7 @@ npm run dev        # modo desenvolvimento (tsx watch)
 npm run migrate    # aplica as migrations sem subir o servidor
 ```
 
-Variáveis de ambiente: `PORT` (padrão `3000`), `HOST` (padrão `127.0.0.1`), `DATABASE_PATH` (padrão `./data/catalog.db`), `LOG_LEVEL` (padrão `info`).
+Variáveis de ambiente: `PORT` (padrão `3000`), `HOST` (padrão `127.0.0.1`), `DATABASE_PATH` (padrão `./data/catalog.db`), `LOG_LEVEL` (padrão `info`; aceita `fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent`). Valores inválidos impedem o boot com erro de configuração.
 
 ## Testes
 
@@ -31,7 +31,9 @@ npm run test:e2e   # compila e sobe o servidor real com banco temporário
 | `PATCH /products/:id` `{ name?, description?, price? }` | `200` | `400 validation_error`, `404 product_not_found` |
 | `DELETE /products/:id` | `204` | `404 product_not_found` |
 
-O preço trafega como string decimal (`"19.90"`) e é guardado em centavos. O SKU é único sem distinção de maiúsculas e imutável. Erros seguem `{ "error": { "code", "message", "details?" } }`.
+O preço trafega como string decimal (`"19.90"`) e é guardado em centavos. O SKU é único sem distinção de maiúsculas, imutável e restrito a caracteres ASCII imprimíveis (sem acentos). O log de requisições registra apenas `method`, `path` (sem query string), `status`, `durationMs` e `reqId`, nunca headers. Erros seguem `{ "error": { "code", "message", "details?" } }`.
+
+Códigos de detalhe de `validation_error`: `sku_required`, `sku_too_long`, `sku_invalid`, `name_required`, `name_too_long`, `description_invalid`, `description_too_long`, `price_invalid`, `unknown_field`, `sku_immutable`. Erros do corpo da requisição fora de `invalid_json`: `413 payload_too_large`, `415 unsupported_media_type` e demais 4xx como `bad_request`. Rota inexistente: `404 route_not_found`.
 
 ## Avisos importantes
 

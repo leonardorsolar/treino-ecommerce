@@ -474,3 +474,13 @@ describe("DELETE /products/:id e rotas", () => {
     expect(res.body.error.code).toBe("route_not_found");
   });
 });
+
+describe("body-parser 4xx", () => {
+  it("IT-076 Content-Encoding não suportado → 415, não 500", async () => {
+    const ctx = setup();
+    const res = await ctx.api.post(base).set("content-type", "application/json").set("content-encoding", "foo").send("{}");
+    expect(res.status).toBe(415);
+    expect(res.body.error.code).toBe("unsupported_media_type");
+    ctx.cleanup();
+  });
+});

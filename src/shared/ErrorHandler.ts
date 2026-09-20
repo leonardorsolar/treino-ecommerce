@@ -42,6 +42,12 @@ export function createErrorHandler(logger?: ErrorLogger): ErrorRequestHandler {
       res.status(413).json({ error: { code: "payload_too_large", message: "Corpo da requisição grande demais." } });
       return;
     }
+    const status = (err as { status?: unknown }).status;
+    if (typeof status === "number" && Number.isInteger(status) && status >= 400 && status < 500) {
+      const code = status === 415 ? "unsupported_media_type" : "bad_request";
+      res.status(status).json({ error: { code, message: "Requisição inválida." } });
+      return;
+    }
     (logger ?? (req as { log?: ErrorLogger }).log ?? console).error({ err }, "unhandled error");
     res.status(500).json({ error: { code: "internal_error", message: "Erro interno do servidor." } });
   };

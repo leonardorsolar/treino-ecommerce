@@ -19,7 +19,18 @@ export function createApp(deps: AppDeps): Express {
   const app = express();
   app.disable("x-powered-by");
   app.use(helmet());
-  app.use(pinoHttp({ logger }));
+  app.use(
+    pinoHttp({
+      logger,
+      // Só o essencial (TechSpec): nada de headers (Authorization/Cookie) nem query string no log.
+      serializers: {
+        req: (req: { method: string; url: string }) => ({ method: req.method, path: req.url.split("?")[0] }),
+        res: (res: { statusCode: number }) => ({ statusCode: res.statusCode }),
+      },
+      customProps: (req) => ({ reqId: req.id }),
+      customAttributeKeys: { responseTime: "durationMs" },
+    }),
+  );
   app.use(express.json());
 
   // Ponto único de extensão para autenticação futura (ADR-005): inserir o middleware aqui.

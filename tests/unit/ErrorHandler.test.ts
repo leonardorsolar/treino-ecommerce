@@ -40,6 +40,19 @@ describe("ErrorHandler e AppError", () => {
     expect(res.body.error.code).toBe("invalid_json");
   });
 
+  it("UT-075 erro 4xx do body-parser (415) responde 415 sem log de erro interno", () => {
+    const { res, logger } = run(Object.assign(new Error("unsupported charset"), { status: 415 }));
+    expect(res.statusCode).toBe(415);
+    expect(res.body.error.code).toBe("unsupported_media_type");
+    expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it("UT-076 erro 4xx genérico (400) responde bad_request", () => {
+    const { res } = run(Object.assign(new Error("bad gzip"), { status: 400 }));
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error.code).toBe("bad_request");
+  });
+
   it("UT-063 erro desconhecido vira 500 sem vazar stack e é logado", () => {
     const err = new Error("boom");
     const { res, logger } = run(err);

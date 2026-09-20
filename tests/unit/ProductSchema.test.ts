@@ -52,6 +52,15 @@ describe("createProductSchema", () => {
       field: "description",
       code: "description_too_long",
     }));
+  it("UT-072 sku com caracteres não ASCII é rejeitado (NOCASE do SQLite é só ASCII)", () =>
+    expect(details(createProductSchema, { ...valid, sku: "ÁGUA-1" })).toContainEqual({ field: "sku", code: "sku_invalid" }));
+  it("UT-073 limites contam caracteres, não unidades UTF-16", () =>
+    expect(createProductSchema.parse({ ...valid, name: "😀".repeat(200) }).name).toHaveLength(400));
+  it("UT-074 description que não é texto usa description_invalid", () =>
+    expect(details(createProductSchema, { ...valid, description: 123 })).toContainEqual({
+      field: "description",
+      code: "description_invalid",
+    }));
   it("UT-018 texto hostil é preservado sem escape", () =>
     expect(createProductSchema.parse({ ...valid, name: "<script>alert(1)</script>" }).name).toBe("<script>alert(1)</script>"));
 });
