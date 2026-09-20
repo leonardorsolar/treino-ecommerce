@@ -1,0 +1,4 @@
+# Arquivo .gitignore
+.aes
+.agent
+.claude
