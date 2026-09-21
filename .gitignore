@@ -16,3 +16,6 @@ build/
 # Logs e arquivos de sistema
 *.log
 .DS_Store
+
+# Dados locais
+data/
